@@ -1,0 +1,164 @@
+\documentclass[10pt,twocolumn]{article}
+
+% use the oxycomps style file
+\usepackage{oxycomps}
+
+% usage: \fixme[comments describing issue]{text to be fixed}
+% define \fixme as not doing anything special
+\newcommand{\fixme}[2][]{#2}
+% overwrite it so it shows up as red
+\renewcommand{\fixme}[2][]{\textcolor{red}{#2}}
+% overwrite it again so related text shows as footnotes
+%\renewcommand{\fixme}[2][]{\textcolor{red}{#2\footnote{#1}}}
+
+% read references.bib for the bibtex data
+\bibliography{references}
+
+% include metadata in the generated pdf file
+\pdfinfo{
+    /Title (The Occidental Computer Science Comprehensive Project: Goals, Timeline, Format, and Advice)
+    /Author (Justin Li)
+}
+
+% set the title and author information
+\title{Senior Project Proposal: \\ Music Recommendation System}
+\author{Bridget Valdez}
+\affiliation{Occidental College}
+\email{bvaldez@oxy.edu}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+In the modern world, streaming platforms are the dominant form of media consumption. Streaming platforms make the amount of content a user has at their fingertips vast and therefore harder to categorize in a meaningful and easy way. In order to improve user satisfaction and retention, companies utilize a variety of recommender systems to make this seemingly endless catalog more manageable and relevant. However, many of these systems neglect to consider niche sounds and artists, and lead to the death of intrigue in music discovery and exploration.\\
+\indent My project aims to explore the design of these music recommendation systems. Specifically, focusing on content-based filtering and machine learning-based filtering techniques. My main goal is to break users out of their existing "filter bubbles", promote smaller and emerging artists, and encourage genuine discovery. My system will not just reinforce a listener's current preference, but encourage them to explore new sounds and genres and support artists who otherwise get lost in the noise.\\
+\indent I plan to do this utilizing users listening histories and artist tag information to recommend new music tailored to individual music preferences. By transforming an artist's tags into TF-IDF vectors, I can compute a profile for every artist and derive a user profile by averaging the vectors of artists they stream more frequently. Recommendations are generated through finding artists whose tag profiles are most similar to the users while penalizing artists with higher popularity. 
+
+\section{Technical Background}
+After the three-week work period, my project utilizes content-based filtering, transforms artist tags into TF-IDF vectors, and ranks them using cosine similarity to provide personalized recommendations. In the future, I plan to explore machine learning to allow for more nuanced recommendations. As I implement those approaches, I will require further research and greater technical background. 
+
+\subsection{Content-Based Filtering}
+A common and important design of recommender systems is content-based filtering. The focus of content-based filtering is analyzing similarities between users and items. The goal of these algorithms is to suggest new items or predict the utility of a certain item for a particular user based on the user's previous likings \cite{SarwarItemCF}. The prediction is given as a numerical value expressing the likeliness of the item to be relevant for the active user. The recommendation is a list of N items ranked by which the user is predicted to like the most. Item-based approach reviews a set of items a user has rated and computes how similar they are to a target item and selects a given number of most similar items. Then, the prediction is computed by taking a weighted average of the target user's ratings on these items. \textcite{SarwarItemCF} found that Adjusted Cosine similarity, which subtracts the corresponding user average from each co-rated pair, worked the best for this similarity calculation. It was also found that item-based algorithms provided a better quality of prediction than user-based algorithms although not significantly larger\cite{SarwarItemCF}.\\
+
+\indent Another similar approach that utilizes content-based filtering is using a multi attribute network. \textcite{SonContentFiltering} explain the use of a multi attribute network to match user preferences with item attributes. The network measures the similarities between directly and indirectly linked items. It acquires attributes, calculates similarity, generates a multi attribute network containing all the items, uses network clustering to group the items, and finally calculates a score reflecting importance \cite{SonContentFiltering}. This method considers relationships among items along a broad range and evaluates the importance of an item based on a feature. This is the main concept of content-based filtering.\\
+
+\indent Content-based filtering was the primary focus of my three week project. focused on understanding exactly what this system involved, what data it required, and how to begin implementing my own version. The item qualities I used in my system were the artist tags. The user interactions were higher relative stream counts for artists. Together this allowed me to make a content-based recommendation system. 
+
+\subsection{Term Frequency Inverse Document Frequency}
+Term Frequency Inverse Document Frequency or TF-IDF works by determining the relative frequency of words in a body of text compared to the inverse proportion of that word over all documents\cite{TFIDF}. This means that TF-IDF is finding how relevant a word is in a text. Higher TF-IDF numbers indicate common words. An important aspect of TF-IDF is that it compares the frequent words in one body of text to that of another that way common words like articles are not accounted for.\\
+
+\indent In my project artist's community generated tags are the body of text and I am using TF-IDF vectors to capture which tags are most frequently associated with a given artist. By averaging the TF-IDF embeddings of a user's most listened to artists we can build a user preference vector, and use cosine similarity to find and recommend new artists that match a users preferences. 
+
+\subsection{Cosine Similarity}
+Cosine similarity is the method used to find the degrees of similarity between two vectors. Cosine similarity is found using the cosine angle multiplication value of the two vectors being compared \cite{Cosine}. A cosine similarity score closer to one indicates that the vectors being compared are similar. The equation is given by the formula:
+\begin{center}
+\begin{math}
+   Cosine Similarity = \frac{ A \times B }{\|A\| \times \|B\|}
+\end{math}
+\end{center}
+For my recommendation system, I use cosine similarity to compare the artist tag TF-IDF vectors and user preference vectors. I then divide that score by a popularity score in an attempt to favor and recommend less popular artists. Cosine similarity allows my system to see how different artists align to a given users listening habits.  
+
+\subsection{Filter Bubbles}
+The phrase "filter bubble" refers to an algorithmic bias that occurs when an internet recommendation system isolates users from diverse content or ideas through recommending content that aligns only with what a user consistently engages with.  This often leads to users being exposed to content or beliefs that reinforce existing opinions and prevent users from exploring content that is outside of their comfort zones. For my music recommendation system, this means broadening the spectrum of content users are exposed to and allowing a more seamless exploration through recommendations. Filter bubble effects can often occur in popular items, products and information that deviate from the long-tail hypothesis are often not recommended, which results in reduced diversity \cite{MohammadFB}. \textcite{MohammadFB} highlights how these filter bubbles can be attributed to a number of things, but one is algorithmic bias. Recommendation algorithms are designed to recommend content that is similar to what a user engages with because it leads to ease of access of media and therefore a higher success rate with long term engagement. Since this is the intended use these filter bubbles can happen relatively easily and often unnoticed. In my project, I plan to address this issue and provide users with more diverse content, both in genre and popularity. 
+
+
+\section{Prior Work}
+In a largely digital world, recommender systems have become increasingly present, they provide an ease of access to discovery or otherwise finding what you are looking for in an overwhelming sea of content. For my project the recommender systems that interested me were the ones used for Spotify music recommendations as well as Netflix's movie recommendations. Since these systems are focused on using user data to provide media recommendations they felt most applicable to my project. Additionally, I explored research that addressed the issues of filter bubbles. Since my project is focused on user exploration the mitigation of filter bubbles was important to understand as well. 
+
+\subsection{Recommendation Systems}
+A central focus of recommendation system strategies such as Spotify's is to maximize user's satisfaction, but minimize effort. \textcite{MadathilSpotifyCF} explains that Spotify achieves this through a hybrid approach that combines content-based recommendations and collaborative filtering. Content-based recommendations work without user evaluation or ratings. Content-based recommendations are often vector based. The objects are defined by characteristic related attributes. Collaborative filtering is found to be the most common method of recommendation. Collaborative filtering revolves around the k-nearest neighbor technique. It searches for a neighbor user who shares similar interests and uses this to provide recommendations. Spotify utilizes a hybrid filtering approach that \textcite{MadathilSpotifyCF} describes and explains as the most efficient. Hybrid filtering combines memory-based and model-based filtering. Memory-based filtering predicts items based on the complete collection of previous ratings with neighborhood-based filtering algorithms \cite{MadathilSpotifyCF}. Model-based filtering uses machine learning to train and model user preferences \cite{MadathilSpotifyCF}. Spotify's Discover Weekly playlist, for example, uses a unified collaborative filtering and content-based filtering approach with hybrid filtering to generate recommendations.\\
+
+\indent Spotify's approach utilizes the hybrid model and has been proven effective. Since, I don't have access to meaningful user data that would allow me to successfully implement collaborative filtering I focused and will continue to focus on content-based filtering alone. Additionally, as I continue this project I can begin to work towards model-based filtering in combination with the content-based filtering to get stronger recommendations. 
+
+\indent Another important aspect to consider in recommendation algorithms is the balance of familiarity, similarity, and discovery \cite{MehrotraAlgorithmicBalance}. As we learned above, recommender systems rely on their ability to model a user's individual preferences using data surrounding their past actions. Although this affords great modeling convenience and enables development, it neglects other desirable qualities of recommendations such as familiarity, similarity, and discovery \cite{MehrotraAlgorithmicBalance}. \textcite{MehrotraAlgorithmicBalance} found that favoring track familiarity in ranking stage outperformed user satisfaction, but provided the worst discovery and suffered from popularity bias. Similarly, favoring discovery provided highest discovery performance but worst in satisfaction. This research highlights how while discovery is highly favorable in long term user retention a balance must be found between forcing users too far outside of a comfort zone and creating "filter bubbles".\\
+
+\indent This study highlights the main struggle with developing algorithms that are more geared towards discovery. If a recommendation algorithm tries to go to far into recommending new items the items will start to become irrelevant to the user. For my project it will be important to be careful not to go to far with the exploration features of my algorithm. Relevance metrics will be important to use to check that the scale isn't tipped too far away from the user. 
+
+\indent Another example of unique recommendation algorithms is Netflix. Netflix utilizes several different approaches and algorithms to determine which movie is a perfect pick for each page or list \cite{Netflix}. One of these strategies is the "bag of items" method. This model treats user streamed videos as a set and creates a user item matrix where each non empty entry represents user feedback, this matrix then becomes the input to models that learn to reconstruct or predict items \cite{Netflix}. Autoencoders view interaction vectors as both input and target. A linear autoencoder with one hidden layer represents a user by averaging the embeddings of the items they've engaged with \cite{Netflix}. Netflix uses deep learning in several of their recommendation systems and it is highlighted that it is the best approach to these algorithms because it allows them to pull several factors into a single model.\\
+
+\indent The Netflix recommendation system strategy felt extremely applicable to my own system. I used the bag of items strategy to create my TF-IDF vectors and otherwise make sense of the artist tags. As my project develops I will also hopefully be able to make use of the autoencoder and embedding strategies that are mentioned in their recommendation system as well.\\
+
+\indent These three examples of successful recommendation systems and strategies give me many of the necessary ideas and understandings to successfully execute my project.
+
+\subsection{Addressing Filter Bubbles}
+There are many different strategies for addressing filter bubbles. \textcite{KidwaiFB} used a Knowledge Graph to utilize connections between movies to better represent connections outside of tag bags. This strategy depicts connections between recommendable content as an interconnected web as opposed to categories of tags. In their study \textcite{KidwaiFB} found that their model outperformed other common recommendation models in diversity of content while still succeeding in recommending content that aligned with user interests. This is a proven effective way at attempting to mitigate filter bubbles and their impacts. While there are a number of different strategies this method seems most applicable to my project. Many other strategies rely on user interaction, which I would love to incorporate in my project but without access to a user base is implausible. Since I am focusing on content based recommender systems this strategy is the most applicable.\\
+
+\indent I found this example of filter bubble mitigation interesting. Although complex, I would like to try to incorporate it into my future project if possible. Early on I will be able to add more simplified approaches, such as re-ranking and penalty factors. However, I believe that this strategy could add interesting and a overall meaningful addition to my project and therefore recommendations. 
+
+\section{Three-Week Project}
+
+The past three weeks I have worked on exploring different data sets and exploring how content-based filtering works and is implemented. This mini project serves as a foundation for my main project. In exploring data sets, I was able to find a data set that contains useful tags and is a reasonable size to allow me to make meaningful recommendations. While there were other datasets that were larger that I had previously thought I could use, I found that I couldn't download the information in an easily accessible way and therefore the data was impossible to manipulate and less useful for my project. However, these datasets that I experimented with and discarded could be referred to later and be found useful in other ways as my project progresses. Through this exploration, I have found that I am more familiar with what exactly both content-based and collaborative filtering-based algorithms do and what they require. While I had a general understanding before, I am now much more confident that I know how content-based filtering works and how it is different from collaborative filtering. I also discovered TF-IDF vectors which I had not heard of before and was able to explore those. While I had previously knew about cosine similarity calculations I had never seen it used in this way and also found that extremely interesting. Through these discoveries and their applications I now have a functioning content-based recommendation algorithm. While my experimentation with the small artist filters is minimal, I have a solid foundation to build more elaborate content-based algorithms later and can hopefully have a good system to collaborate with a machine learning-based recommendation algorithm.\\
+
+\indent The algorithm first reads 4 of the lastfm files I downloaded that contain artist information, available tags, users artist streaming data, and artists tags. It then creates an artist tag association, grouping most frequently appearing tags with their associated artist in a list, more frequent tags have a greater weight. Currently, the recommendation system sums every artist's listen counts across all users, and creates a popularity score between 0 and 1. This value is later used to divide the cosine similarity measure. Next, it merges artist names, tag lists, and popularity scores into a DataFrame, vectorizes the tags into TF-IDF features, and builds a user profile. The user profile is created by finding their most streamed artists, TF-IDF vectors, and averaging into a single preference vector. Lastly, the cosine similarity is computed between the user profile and an artist's tag vector, the popularity penalty is applied to the score, and filters out any artists that the user has streamed before. It then prints the top N remaining artists. When I began the three week project I hadn't defined any hard metrics. I was mostly focused on exploring content-based recommendation systems and being able to implement either the start of or a minimally functional content-based system. I found that my system is providing artists that share similar tags to users preferred artists and have a relatively low overall stream count. While my system currently recommends smaller artists I also have the goal of music exploration. Which involves recommendations that may lie near a users preferred artist tags. 
+
+\section{Expected Methods}
+To continue my project next semester I plan to move from my TF-IDF content-based filtering into a more advanced content-based machine-learning approach. I am not experience with these techniques at all, so I plan to spend a significant amount of time this summer and early weeks reading, watching videos, and experimenting with machine-learning. So far, I have enjoyed reading about these topics and have found testing and exploring the implementations of recommendation systems to be extremely interesting. Below is a rough week-by-week plan outlining my goals for the coming semester.\\\\
+\noindent
+\textbf{Weeks 1-2:}\\
+I plan to reread the papers from my literature review with more care. I would like to learn more about encoders and metric-learning. These first two weeks are essential to outline my plan in more detail for the rest of the semester and make sure I have a strong grasp of the content I am planning to execute. I would like to understand how an encoder or decoder would be involved with my TF-IDF tag vectors and overall, just gain a deeper general understanding.\\\\
+\textbf{Weeks 3-4:}\\
+Using what I learned the previous weeks I will implement an autoencoder on a TF-IDF matrix. As this will be early experimenting for me I expect to have some issues and mistakes a long the way. Again, these early weeks will be good for experimenting and exploring these topics as I begin to develop my recommender system.\\\\
+\textbf{Weeks 5-6:}\\
+Once I hopefully have a working autoencoder, I can begin attempting to use contrastive learning or triplet-loss to pull artists that have similar tags closer in the embedding space. Likely following a tutorial or reading research to implement correctly.\\\\
+\textbf{Weeks 7-8:}\\
+These weeks would be spent clustering the learned embeddings into top genres and subgenres. A lot of this time will be spent learning how to cluster and understanding hyperparameters and adjusting those.\\\\
+\textbf{Weeks 9-12:}\\
+These weeks would be spent implementing diversity and fairness metrics. Focusing on understanding re-ranking strategies and beginning to implement those in my own work. Experiment with different strategies I have explored and read about and see which are best at achieving the goals of my project.\\\\
+\textbf{Weeks 13-14:}\\
+These last few weeks could be spent merging my different testing implementations. Focused on merging autoencoder embeddings, diversity and ranking models, and fairness filters all into one seamless system. Through this I might find errors in certain peices and gain a better understanding of how the different parts interact and work together.\\\\
+\textbf{Weeks 15-16:}
+These last two weeks will be dedicated to have time for error. If something takes longer than expected I will have these two weeks to spend troubleshooting, finetuning, and perfecting my recommendation system. Additionally, I will hopefully have time to spend working on writing and presentation material.\\\\
+
+\indent Hopefully, at the end of the semester I will have a fully functional recommendation system that is able to provide meaningful recommendations while accounting for bias and avoids filter bubbles as efficiently as possible. I plan on taking strong notes, updating my repository frequently, and overall maintaining clean code and workspaces so that I can accurately sum up my semester at the end. Overall, I am excited to explore these new territories and concepts of computer science and become a stronger computer science student a long the way. 
+
+\section{Metrics and Results}
+
+One metric that appears to be prominent among most recommendation systems testing is the mean average error. The mean average error is the average deviation of the predicted rating from the actual rating \cite{SarwarItemCF}\cite{BasilicoCFContent}. A lower mean average score means a more accurate recommendation. The mean average error is commonly given by the following formula:
+
+\begin{center}
+\begin{math}
+    M.A.E = \frac{\sum_{i=1}^{N} |p_{i}-q_{i}|}{N}
+\end{math}
+\end{center}
+
+\indent \textcite{SarwarItemCF} also used the mean zero-one test error, which gives an error of 1 to every incorrect prediction. While there were slight deviations from this metric among other studies, it seemed to be another generally used metric that I could incorporate into my own project.\\
+
+\indent In diversity tests, I plan to use metrics similar to \cite{AndersonDiversity}, where they gave users a generalist or specialist score to analyze the diversity in consumption. A GS-score measures the average cosine similarity between a song vector and the average of the user's song vectors. I plan on using these or similar metrics in my own project tests.\\
+
+\indent \textcite{KidwaiFB} uses another metric called recall, which is also commonly used in recommendation systems. Recall simply creates a ratio of relevant recommendations to total relevant items. Recall is given by the following formula:
+\begin{center}
+\begin{math}
+    Recall = \frac{Number\ of\ Relevant\ Recommendations}{Total\ Number\ of\ Relevant\ Items}
+\end{math}
+\end{center}
+
+\indent \textcite{KidwaiFB} uses another important metric called Coverage. Coverage determines the diversity of the recommendations provided by the system. Coverage is important to my project because I am focused on providing more of these unique recommendations. Coverage is given by the following equation:
+\begin{center}
+\begin{math}
+    Coverage = \frac{Number\ of\ Unique\ Items\ Recommended}{Total\ Number\ of\ Unique\ Items\ in\ Training\ Set}
+\end{math}
+\end{center}
+
+\indent I plan to incorporate these five metrics into my project testing in order to verify my success. Mean average error, zero-one, and recall will all be beneficial in assessing the accuracy of my recommendation system. The generalist specialist score and coverage metrics will allow me to assess the ability of my recommendation system to make unique and diverse recommendations. Together, these metrics will allow me to test the capabilities of my recommendation system and understand if the goals I have set are being met. 
+
+\section{Ethical Considerations}
+When thinking about what I wanted to do for my senior project, I knew I wanted to do something that involved music. While watching the slow death of some of my favorite music discovery platforms like Pitchfork Magazine and bandcamp, which are both major supporters of small artists, I was considering both why these platforms were failing and how else small artists could be supported. \textcite{BornCurationCulture} notes that "algorithmic recommendation systems not only influence what consumers are presented, they have direct effects on the type of songs that artists produce to generate fans, listens, and plays on platforms like Spotify. They can also result in artists adjusting their songs and metadata of their tracks, in order to appear higher up in search results and have their music be more ‘platform ready’". The use of recommender systems has evolved the way music is made and marketed and puts smaller artists in harder positions to either get noticed or otherwise make a living while still expressing their creativity and creating authentic and genuine music. \textcite{AndersonDiversity} conducted an investigation of algorithmic effects on content consumption, the association between algorithmic recommendations and the diversity of content users consume. In their research, they found that user-driven listening is typically much more diverse than algorithm-driven listening due to the formation of filter bubbles \cite{AndersonDiversity}. The ease brought with streaming services and recommender systems have led to a decreased reliance or interest of the average listener to pay attention to music recommendation magazines or sites. Therefore, musicians are reworking how they are marketing and making music. While these changes aren't entirely a result of filter bubbles they are a major contributor. When designing recommendation algorithms I think we genuinely lack an understanding of how these systems affect the creators. While they are excellent for user retention and engagement it is forcing artists to modify their approaches to making and releasing music. My project is focused on trying to promote smaller artists in a way these magazines once did.\\
+
+\indent Another consideration in the designing of recommender systems is to have cultural understanding. \textcite{BornCurationCulture} highlight how while recommender systems are efficient, they often fail to have a "real understanding of the nature of what music is taken to be in many cultures around the world". Recommender systems often focus on western definitions of popular music and taste. By treating tracks and scores as if they are universal recommender systems, we fail to consider cultural contexts that shape the meaning and relevance of music as well. While I don't plan on incorporating sound in my algorithms or methods it is still important to note the how other aspects of my project may neglect cultural contexts and relevance of non western music. Certain tags may be rare and associated with unique cultural understandings of music and need to be considered as well both in genre exploration and recommending artists within these genres.\\
+
+\indent Another recent issue in recommendation systems that has been highlighted is algorithmic inequalities. \textcite{FerraroGenderImbalance} highlight in their research that men are recommended in algorithmic recommendations a significant amount more than women. This research highlights how historical biases have continued to have an impact on current algorithms. Furthermore, \textcite{AguilarGender} explain how their research found that women would appear lower in Spotify New Music generated playlists, and although they found these discrepancies, they found that it was most likely due to historical bias. There has been a lot of ethical concern raised regarding the data being used in the designing of algorithms and AI training in general. While it is still extremely important to be thoughtful in choosing data to use for these processes, these studies highlight how sometimes these datasets misrepresent certain groups due to systemic issues. For my project, I would like to consider issues such as these and try to account for them while also thinking about other groups that may be misrepresented in my data. \textcite{FerraroGenderImbalance} explains that gradually increasing exposure of underrepresented gender groups can interrupt these long-term bias amplifications. They also note that re-ranking strategies are able to provide fair recommendations and can break original feedback loops. I think it is important to consider these strategies when designing and implementing my recommendation algorithm.\\
+
+\indent It is also important to think about the broader ethics and impacts of a recommender system. In their podcast, \textcite{HarrisEthics} talk about how there are many ethical downfalls of recommender systems, "many of which arise because companies tend to build recommender systems to reflect user feedback, without thinking of the broader implications these systems have for society and human civilization". While a lot of their focus is on the issues with recommender systems involved in places like Twitter that recommend news and lead to influence of opinion intentional or not, she also highlights an interesting aspect of recommender systems in media. She explains how being able to access and see the ways in which you are being tracked is an important feature that many companies fail to provide \cite{HarrisEthics}. They argue that having access to see how your data is being used creates more trust between users and ultimately benefits the users relationship with the app or system. While my project is only going to use public data from data sets and APIs, it is important to consider how recommender systems are using data and to be empathetic to how users would feel about having their data manipulated to provide recommendations. While designing my own recommendation system I will be sure to consider how I am using data and what data I am using, imagining if it were used in a live environment if it would be invasive or a misrepresentation of people and their data. \\
+
+\indent The designing of recommendation systems involves a lot of different ethical considerations. It is important to think about the user, how their data is being interpreted and how the relative influence of the recommender system impacts them and others. One of the goals of my project is to create a recommender system that reduces filter bubbles and leads to both diversity in content and artist popularity. This would hopefully address issues of smaller artists and varying cultural tagged music getting lost. I would also like to add filters discussed by \textcite{FerraroGenderImbalance} in order to address historical bias of women in music as well. In addition to these focuses I will continue to think about the impact of my system on potential users and artists, attention to the data I am using and how exactly it is being manipulated. I think it is important to be mindful when making anything that involves the public data and have goals of being thoughtful and critical with my own project development.
+
+\printbibliography
+\appendix
+
+\clearpage
+
+\onecolumn
+
+\end{document}
